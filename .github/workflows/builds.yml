@@ -1,0 +1,65 @@
+name: build
+
+on: [push, pull_request]
+
+jobs:
+  build_api:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1    
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+        # API  
+      - name: Build, tag, and push image to Amazon ECR - API
+        id: build-image-api
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: 	example-dev/api
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          pwd
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"   
+
+      - uses: danielr1996/envsubst-action@1.0.0
+        env:
+            MYSQL_HOST: ${{ secrets.MYSQL_HOST }}
+            MYSQL_PORT: ${{ secrets.MYSQL_PORT }}
+            MYSQL_PASS: ${{ secrets.MYSQL_PASS }}
+            MYSQL_USER: ${{ secrets.MYSQL_USER }}
+            MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
+            FLASK_APP: ${{ secrets.FLASK_APP }}
+            FLASK_ENV: ${{ secrets.FLASK_ENV }}
+            SECRET_KEY: ${{ secrets.SECRET_KEY }}
+            HASH_COMMIT: ${{ github.sha }}
+        with:
+          input: task-template.json
+          output: task-definition.json                 
+
+      - name: Fill in the new image ID in the Amazon ECS task definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: api
+          image: ${{ steps.build-image-api.outputs.image }}    
+          
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: example-dev-ecs-service-api
+          cluster: example-dev-ecs-cluster
+          wait-for-service-stability: true          
+     
