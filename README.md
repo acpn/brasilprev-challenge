@@ -85,6 +85,7 @@ The routes from the API it's (assuming localhost as your host):
  - Check status API: GET - ``localhost:5000/health-check``
 
 1 - Clients
+ - Authenticate client: POST - ``localhost:5000/auth/login`` (necessary to pass email and password as a json file)
  - Create a new client: POST - ``localhost:5000/clients`` (necessary to pass name, email and password as a json file)
  - Update an given client: PUT - ``localhost:5000/clients/id`` (necessary to pass name, email, password as a json file and id as route param)
  - List all Clients: GET - ``localhost:5000/clients``

@@ -27,8 +27,8 @@ class ClientService():
                 db_password: the password from database.
             Returns:
                 boolean: True when the match it's perfect, False otherwise.
-        """
-        return check_password_hash(password, db_password)
+        """        
+        return check_password_hash(db_password, password)
     
     def create_client(self, _username, _email, _password):
         """ Method to create a new client
@@ -81,6 +81,28 @@ class ClientService():
                 response=json.dumps(data),
                 status=200, 
                 mimetype='application/json')
+            
+        except SQLAlchemyError as err:
+        
+            return Response(
+                response=json.dumps({"Error": str(err.args[0])}),
+                status=500,
+                mimetype='application/json')
+            
+        finally:
+            self.db.session.close()
+            
+    def get_client_by_email(self, _email):
+        """ Method to get client by e-mail
+            Args:
+                _email: e-mail from the client
+            Returns:
+                data: An object with Client structure.
+        """
+        try: 
+            data = self.clientModel.query.filter_by(email=_email).first()   
+            
+            return data
             
         except SQLAlchemyError as err:
         

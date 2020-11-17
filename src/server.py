@@ -1,6 +1,8 @@
 import json
 import os
-from flask import Flask, request
+import datetime
+import jwt
+from flask import Flask, request, jsonify
 from database.client_service import ClientService
 from database.product_service import ProductService
 from database.order_service import OrderService
@@ -18,6 +20,34 @@ def index():
         'message': 'OK',
         'version-commit': os.environ.get('HASH_COMMIT', 'invalid')
     }
+
+## Route to authenticate the client and returns a token to access other routes.
+@app.route('/auth/login', methods=['POST'])
+def login():
+    email = request.json['email']
+    password = request.json['password']
+    
+    client = clientService.get_client_by_email(email)
+    
+    if not client:
+        return jsonify({
+            "error": "Credentials do not match."
+        }), 403    
+    
+    if not clientService.check_password(password, client.password):
+        return jsonify({
+            "error": "Credentials do not match."
+        }), 403
+    
+    # The token expires at each 30 minutes
+    payload = {
+        "id": client.id,
+        "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=30)
+    }
+    
+    token = jwt.encode(payload, app.config['SECRET_KEY'])
+    
+    return jsonify({"token": token.decode('utf-8')})
 
 @app.route('/clients', methods=['GET', 'POST'])
 def index_or_create():

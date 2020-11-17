@@ -1,5 +1,4 @@
 import os
-import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_script import Manager
@@ -14,6 +13,7 @@ class Connection:
         self.app.config['SQLALCHEMY_DATABASE_URI'] = self.return_url()
         self.app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
         self.app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
+        self.app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'admin')
         self.db = SQLAlchemy(self.app)
         self.migrate = Migrate(self.app, self.db)
         self.manager = Manager(self.app)
