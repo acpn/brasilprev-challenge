@@ -21,12 +21,12 @@ class Connection:
     
     def return_url(self):
         url = 'mysql+pymysql://' + \
-            os.environ.get('MYSQL_USER', 'invalid') + ':' + \
-            os.environ.get('MYSQL_PASS', 'invalid') + '@' + \
+            os.environ.get('MYSQL_USER', 'admin') + ':' + \
+            os.environ.get('MYSQL_PASS', 'admin123!') + '@' + \
             os.environ.get('MYSQL_HOST',
-                        'invalid') \
+                        'brasilprev.cnrcokztynoc.us-east-1.rds.amazonaws.com') \
                         + ':' + \
-            os.environ.get('MYSQL_PORT', 'invalid') + '/' + \
-            os.environ.get('MYSQL_DATABASE', 'invalid')
+            os.environ.get('MYSQL_PORT', '3306') + '/' + \
+            os.environ.get('MYSQL_DATABASE', 'brasilprev')
             
         return url

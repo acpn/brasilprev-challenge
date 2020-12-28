@@ -1,8 +1,8 @@
 <p align="center">
-  <img width="200" height="163" src="./assets/logo-brasilprev.svg">
+  <img src="./assets/flask_python.png">
 </p>
 <h1 align=center>BrasilPrev Challenge</h1>
-<p align="center">Python API to simulate an virtual store CRUD (http://api.antonio-paes.com/health-check)</p>
+<p align="center">Python API to simulate an virtual store CRUD, proposed by BrasilPrev an insurance company</p>
 
 ## :computer: Tech:
 - Python
@@ -108,19 +108,6 @@ The routes from the API it's (assuming localhost as your host):
 To make your life a piece of cake I put a file inside the directory insomnia with the routes already setting up, so just download insomnia (https://insomnia.rest/) and import this file using the the option Import/Export > Import Data and then select From Clipboard (before that make sure you copy the data inside insomnia_routes file).
 
 After that just try different routes and combinations to see how the API works.
-
-
-## Testing Live
-To turns things more efficient and nice as my point of view, all this project it's in a CI/CD process, so all this it's already running in AWS and you could access that by this link:
-
-- http://api.antonio-paes.com/health-check
-
-This link provides the last commited container image.
-
-And then you can access all the other routes following the host: http://api.antonio-paes.com/<route_name>.
-
-To be easy for you just use the step from insomnia configuration and change the host to http://api.antonio-paes.com/, that way all the routes should be working for you.
-
 
 ## Remarks
 

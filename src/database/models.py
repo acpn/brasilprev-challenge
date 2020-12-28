@@ -2,7 +2,7 @@ import json
 from datetime import datetime
 from flask import Response
 from sqlalchemy.exc import SQLAlchemyError
-from .config import Connection
+from config import Connection
 
 conn = Connection()
 app = conn.app
@@ -30,7 +30,7 @@ class Product(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.String(64), index=False, unique=True, nullable=False)
-    price = db.Column(db.Numeric(10, 2), index=True, unique=True, nullable=False)
+    price = db.Column(db.Numeric(10, 2), index=True, unique=False, nullable=False)
     quantity = db.Column(db.Integer)
     created_at = db.Column(db.DateTime, index=False, unique=False, nullable=True,
                             default=datetime.now)
@@ -46,7 +46,7 @@ class Order(db.Model):
     product_id = db.Column(db.Integer, db.ForeignKey('Product.id'))
     order_quantity = db.Column(db.Integer)
     order_value = db.Column(db.Numeric(10, 2), index=False, unique=False, 
-                            nullable=False)
+                            nullable=True)
     created_at = db.Column(db.DateTime, index=False, unique=False, nullable=True,
                             default=datetime.now)
     updated_at = db.Column(db.DateTime, index=False, unique=False, nullable=True,
